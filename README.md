@@ -1,56 +1,77 @@
-# Welcome to your Expo app 👋
+# mobile-app-starter
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo (React Native) starter that pairs with the `rails-ai-starter` JSON API. Clone, rename, point at your Rails backend, and start building.
 
-## Get started
+> Working on both repos at once? Run `claude` from the parent directory — see `../CLAUDE.md` for the cross-cutting picture (auth contract, etc.).
 
-1. Install dependencies
+## Stack
 
-   ```bash
-   npm install
-   ```
+- Expo (file-based routing via `expo-router`)
+- TypeScript
+- Auth: token-based, talks to the Rails API at `/api/v1/*`
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+npm install
+cp .env.example .env
+# Edit .env — set EXPO_PUBLIC_API_URL to where Rails is running.
+# Simulators can use http://localhost:3000, but a physical device
+# needs your Mac's LAN IP, e.g. http://192.168.1.42:3000.
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Make sure the Rails backend is running:
 
-### Other setup steps
+```bash
+cd ../rails-ai-starter && bin/dev   # http://localhost:3000
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Project layout
 
-## Learn more
+```
+src/
+  app/                 # expo-router file-based routes
+    (auth)/            # public screens — sign-in, sign-up
+    (authed)/          # screens that require a signed-in user
+    _layout.tsx        # root layout, wraps everything in <AuthProvider>
+  contexts/auth.tsx    # auth state + signIn / signUp / signOut
+  lib/api.ts           # fetch wrapper, adds x-api-token header
+  lib/auth-storage.ts  # secure token persistence
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### Route gating
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+`(auth)` and `(authed)` are Expo Router groups. Their `_layout.tsx` files read `user` from `AuthProvider` and `Redirect` based on signed-in state — so adding a screen under `(authed)/` automatically gets gated. No manual checks needed inside screens.
 
-## Join the community
+## Auth contract
 
-Join our community of developers creating universal apps.
+The mobile app talks to these Rails endpoints (defined in `rails-ai-starter/config/routes.rb`):
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Method | Path                    | Returns              |
+| ------ | ----------------------- | -------------------- |
+| POST   | `/api/v1/registrations` | `{ user, token }`    |
+| POST   | `/api/v1/sessions`      | `{ user, token }`    |
+| DELETE | `/api/v1/sessions`      | `{ ok: true }` (rotates token) |
+| GET    | `/api/v1/users/current` | `{ user }`           |
+
+Authenticated requests send `x-api-token: <token>`. The token comes back on sign-in/up, is stored via `expo-secure-store`, and `signOut()` calls `DELETE /api/v1/sessions` so the server-side token is invalidated.
+
+## Running on a device
+
+Expo Go on a physical phone can't reach `localhost` on your Mac — that resolves to the phone itself. Set `EXPO_PUBLIC_API_URL` to your Mac's LAN IP (e.g. `http://192.168.1.42:3000`) and make sure your firewall allows inbound on that port.
+
+Rails has CORS open in development (`config/initializers/cors.rb`). Native iOS/Android don't enforce CORS, but Expo web does — so the same `EXPO_PUBLIC_API_URL` works across all targets.
+
+## Renaming for a new project
+
+When you fork this as the basis for a real app, the following references will need updating:
+
+- `package.json` → `name`
+- `app.json` → `expo.name`, `expo.slug`, `expo.scheme`
+- This `README.md` title
+
+## Working with Claude Code
+
+- The version-pinned Expo docs live at https://docs.expo.dev/versions/v56.0.0/ — Expo APIs change frequently, so check those before writing code that touches Expo internals.
+- Repo-specific instructions for Claude are in `AGENTS.md` and `CLAUDE.md`.

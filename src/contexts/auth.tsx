@@ -42,15 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
-        const me = await api.get<{ user: User } | User>('/api/v1/users/current');
+        const res = await api.get<{ user: User }>('/api/v1/users/current');
         if (cancelled) return;
-        // The Rails endpoint may return either { user: {...} } or the user object directly,
-        // depending on the JSON view. Handle both.
-        const u = (me as { user?: User }).user ?? (me as User);
-        setUser(u && (u as User).id ? (u as User) : null);
+        setUser(res.user);
       } catch (e) {
         if (e instanceof ApiError && e.status === 401) {
-          // No valid token; that's fine, just not signed in.
           await clearToken();
         }
         setUser(null);
@@ -76,6 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    // Tell Rails to rotate the token so it can't be reused. Local state still
+    // clears even if the server is unreachable or the token was already invalid.
+    try {
+      await api.delete('/api/v1/sessions');
+    } catch {}
     await clearToken();
     setUser(null);
   }
