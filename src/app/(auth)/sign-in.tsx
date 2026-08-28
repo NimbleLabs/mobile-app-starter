@@ -1,18 +1,14 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { BrandMark } from '@/components/brand-mark';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { Button, TextField } from '@/components/ui';
+import { Branding } from '@/constants/branding';
+import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth';
 
 export default function SignInScreen() {
@@ -42,16 +38,20 @@ export default function SignInScreen() {
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           style={styles.form}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <ThemedText type="title" style={styles.title}>
-            Sign in
-          </ThemedText>
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ThemedView style={styles.header}>
+            <BrandMark size={64} />
+            <ThemedText type="title" style={styles.title}>
+              Welcome back
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
+              Sign in to {Branding.appName}
+            </ThemedText>
+          </ThemedView>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#999"
+          <TextField
+            label="Email"
+            placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
@@ -59,31 +59,26 @@ export default function SignInScreen() {
             onChangeText={setEmail}
             editable={!submitting}
           />
-          <TextInput
-            style={styles.input}
+          <TextField
+            label="Password"
             placeholder="Password"
-            placeholderTextColor="#999"
             secureTextEntry
             autoComplete="current-password"
             value={password}
             onChangeText={setPassword}
             editable={!submitting}
+            onSubmitEditing={handleSubmit}
           />
 
-          <Pressable
-            style={[styles.button, submitting && styles.buttonDisabled]}
-            onPress={handleSubmit}
-            disabled={submitting}
-          >
-            {submitting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <ThemedText style={styles.buttonText}>Sign in</ThemedText>
-            )}
-          </Pressable>
+          <Button loading={submitting} onPress={handleSubmit} style={styles.button}>
+            Sign in
+          </Button>
 
           <Link href="/sign-up" style={styles.link}>
-            <ThemedText type="small">Don&apos;t have an account? Sign up</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              Don&apos;t have an account?{' '}
+            </ThemedText>
+            <ThemedText type="linkPrimary">Sign up</ThemedText>
           </Link>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -97,27 +92,19 @@ const styles = StyleSheet.create({
   form: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 24,
-    gap: 12,
+    paddingHorizontal: Spacing.four,
+    gap: Spacing.three,
+    width: '100%',
+    maxWidth: 440,
+    alignSelf: 'center',
   },
-  title: { textAlign: 'center', marginBottom: 24 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 14,
-    fontSize: 16,
-    color: '#111',
-    backgroundColor: '#fff',
-  },
-  button: {
-    backgroundColor: '#111',
-    paddingVertical: 14,
-    borderRadius: 8,
+  header: {
     alignItems: 'center',
-    marginTop: 8,
+    gap: Spacing.one,
+    marginBottom: Spacing.four,
   },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: { color: '#fff', fontWeight: '600' },
-  link: { textAlign: 'center', marginTop: 16 },
+  title: { textAlign: 'center', fontSize: 34, lineHeight: 40, marginTop: Spacing.two },
+  subtitle: { textAlign: 'center' },
+  button: { marginTop: Spacing.two },
+  link: { textAlign: 'center', marginTop: Spacing.two },
 });

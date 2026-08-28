@@ -1,98 +1,62 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { Card, Screen, Section } from '@/components/ui';
+import { Branding } from '@/constants/branding';
+import { Spacing } from '@/constants/theme';
+import { useAuth } from '@/contexts/auth';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+const HINTS = [
+  {
+    title: 'Edit this screen',
+    body: 'This is the Home tab.',
+    code: 'src/app/(authed)/index.tsx',
+  },
+  {
+    title: 'Design tokens',
+    body: 'Colors, spacing, radii, and fonts live in one place. Read them via useTheme() — no hard-coded hex in screens.',
+    code: 'src/constants/theme.ts',
+  },
+  {
+    title: 'Report real bugs',
+    body: 'Unhandled errors are sent to the backend Logs automatically. For a failure that leaves a user stuck, call:',
+    code: "reportError(e, { context: { screen: 'home' } })",
+  },
+];
 
 export default function HomeScreen() {
+  const { user } = useAuth();
+  const greeting = user?.name?.trim() || user?.email || 'there';
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <Screen>
+      <ThemedText type="title" style={styles.pageTitle}>
+        {Branding.appName}
+      </ThemedText>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+      <Card>
+        <ThemedText type="subtitle" style={styles.greeting}>
+          Hi, {greeting}
         </ThemedText>
+        <ThemedText themeColor="textSecondary">{Branding.tagline}</ThemedText>
+      </Card>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <Section title="Get started">
+        {HINTS.map((hint) => (
+          <Card key={hint.title}>
+            <ThemedText type="smallBold">{hint.title}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {hint.body}
+            </ThemedText>
+            <ThemedText type="code">{hint.code}</ThemedText>
+          </Card>
+        ))}
+      </Section>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  pageTitle: { marginBottom: -Spacing.two },
+  greeting: { fontSize: 24, lineHeight: 30 },
 });

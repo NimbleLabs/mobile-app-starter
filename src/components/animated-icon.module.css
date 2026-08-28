@@ -1,5 +1,6 @@
+/* Keep in sync with Brand[500] -> Brand[600] in src/constants/theme.ts. */
 .expoLogoBackground {
-  background-image: linear-gradient(180deg, #3c9ffe, #0274df);
+  background-image: linear-gradient(180deg, #7c3aed, #6d28d9);
   border-radius: 40px;
   width: 128px;
   height: 128px;

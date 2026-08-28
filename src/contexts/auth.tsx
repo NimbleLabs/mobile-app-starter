@@ -15,6 +15,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 
 import { api, ApiError } from '@/lib/api';
 import { clearToken, setToken } from '@/lib/auth-storage';
+import { reportError } from '@/lib/logger';
 
 export type User = {
   id: number;
@@ -47,7 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(res.user);
       } catch (e) {
         if (e instanceof ApiError && e.status === 401) {
+          // Expired / revoked token: expected, not a bug.
           await clearToken();
+        } else {
+          // Anything else (5xx, malformed response, unexpected throw) means a
+          // user who can't get past the splash — worth an admin's attention.
+          reportError(e, { context: { phase: 'auth-bootstrap' } });
         }
         setUser(null);
       } finally {

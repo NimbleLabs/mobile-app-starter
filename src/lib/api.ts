@@ -3,6 +3,8 @@
  *
  * - Reads base URL from EXPO_PUBLIC_API_URL.
  * - Adds `x-api-token` header automatically when a token is stored.
+ * - Adds the Ahoy visit/visitor headers so server-side analytics can attribute
+ *   the request to a device and session (see ./visit).
  * - Parses JSON, surfaces error messages from the Rails error envelope.
  *
  * Usage:
@@ -13,14 +15,16 @@
  *   );
  */
 import { getToken } from './auth-storage';
+import { visitHeaders } from './visit';
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
+export const BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 export class ApiError extends Error {
   status: number;
   body: unknown;
   constructor(message: string, status: number, body: unknown) {
     super(message);
+    this.name = 'ApiError';
     this.status = status;
     this.body = body;
   }
@@ -34,12 +38,18 @@ async function request<T>(
   body?: unknown,
   init?: RequestInit
 ): Promise<T> {
-  const token = await getToken();
+  const [token, visit] = await Promise.all([getToken(), visitHeaders()]);
+  // FormData (file upload) must NOT be JSON-encoded, and the browser/RN sets its
+  // own multipart Content-Type (with boundary) — so we omit ours for it.
+  const isForm = typeof FormData !== 'undefined' && body instanceof FormData;
 
   const headers: Record<string, string> = {
     Accept: 'application/json',
-    ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    ...(body !== undefined && !isForm ? { 'Content-Type': 'application/json' } : {}),
     ...(token ? { 'x-api-token': token } : {}),
+    // Ahoy visit/visitor identity. Sent on every request so the events Rails
+    // records itself land on the same visit as the ones the app reports.
+    ...visit,
     ...((init?.headers as Record<string, string> | undefined) ?? {}),
   };
 
@@ -47,7 +57,7 @@ async function request<T>(
     ...init,
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : isForm ? (body as FormData) : JSON.stringify(body),
   });
 
   const text = await res.text();
