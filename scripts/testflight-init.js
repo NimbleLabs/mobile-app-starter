@@ -222,6 +222,17 @@ async function gatherCreds(bundleId) {
 
 // --- 4. write eas.json --------------------------------------------------------
 
+// The project's Node version: .nvmrc if there is one, otherwise the Node
+// running this script — whichever wrote package-lock.json.
+function projectNodeVersion() {
+  const nvmrc = path.join(PROJECT_ROOT, '.nvmrc');
+  if (fs.existsSync(nvmrc)) {
+    const v = fs.readFileSync(nvmrc, 'utf8').trim().replace(/^v/, '');
+    if (/^\d+\.\d+\.\d+$/.test(v)) return v;
+  }
+  return process.versions.node;
+}
+
 function writeEasJson(bundleId) {
   section('Writing eas.json');
   let easJson = {};
@@ -235,6 +246,17 @@ function writeEasJson(bundleId) {
   easJson.build.development ||= { developmentClient: true, distribution: 'internal' };
   easJson.build.preview     ||= { distribution: 'internal', ios: { simulator: true } };
   easJson.build.production  ||= { autoIncrement: true };
+
+  // Build on EAS with the same Node (and so the same npm) that wrote
+  // package-lock.json here. Otherwise EAS's default Node can bring an older
+  // npm whose `npm ci` rejects the lock as "out of sync" (Kindled's first
+  // build failed exactly this way: npm 10 on EAS vs npm 11 locally).
+  const nodeVersion = projectNodeVersion();
+  easJson.build.base = { ...(easJson.build.base || {}), node: nodeVersion };
+  for (const name of ['development', 'preview', 'production']) {
+    easJson.build[name].extends ||= 'base';
+  }
+  info(`EAS builds pinned to Node ${nodeVersion}`);
 
   easJson.submit ||= {};
   easJson.submit.production ||= {};
