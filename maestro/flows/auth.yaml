@@ -1,15 +1,11 @@
 # Sign up, sign out, sign back in — against the real Rails API
 # (EXPO_PUBLIC_API_URL). Makes a new account every run.
 appId: host.exp.Exponent
-env:
-  METRO_URL: exp://127.0.0.1:8081
 ---
 - runScript:
     file: ../scripts/new-account.js
 - runFlow: ../subflows/open-app.yaml
-- extendedWaitUntil:
-    visible: "Welcome back"
-    timeout: 30000
+- runFlow: ../subflows/start-signed-out.yaml
 - tapOn:
     id: sign-in-to-sign-up
 - tapOn:
@@ -23,6 +19,10 @@ env:
 - inputText: ${output.password}
 - tapOn:
     id: sign-up-submit
+- runFlow:
+    file: ../subflows/dismiss-save-password.yaml
+    env:
+      EXPECT: "Hi, Maestro"
 - extendedWaitUntil:
     visible: "Hi, Maestro"
     timeout: 15000
@@ -45,6 +45,10 @@ env:
 - inputText: ${output.password}
 - tapOn:
     id: sign-in-submit
+- runFlow:
+    file: ../subflows/dismiss-save-password.yaml
+    env:
+      EXPECT: "Hi, Maestro"
 - extendedWaitUntil:
     visible: "Hi, Maestro"
     timeout: 15000

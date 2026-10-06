@@ -5,7 +5,9 @@
 appId: host.exp.Exponent
 ---
 - launchApp
-- openLink: ${METRO_URL}
+# METRO_URL comes from scripts/e2e.sh (-e). Don't give it a default in a
+# flow's env: block — that would override the command line.
+- openLink: "${typeof METRO_URL === 'undefined' ? 'exp://127.0.0.1:8081' : METRO_URL}"
 - runFlow:
     when:
       visible: "Open"

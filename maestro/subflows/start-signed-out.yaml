@@ -1,0 +1,18 @@
+# Flows start from the sign-in screen. If an earlier run left the app signed
+# in (the token survives in the Keychain), sign out through the UI first.
+appId: host.exp.Exponent
+---
+- runFlow:
+    when:
+      visible: "Profile"   # the tab bar only exists when signed in
+    commands:
+      - tapOn: "Profile"
+      - scrollUntilVisible:
+          element:
+            id: profile-sign-out
+          centerElement: true
+      - tapOn:
+          id: profile-sign-out
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 30000

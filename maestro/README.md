@@ -59,5 +59,14 @@ including driving two users from one simulator with `runScript` HTTP calls.
 - **iOS puts a narrow no-break space before AM/PM.** Match times with
   `"7:00.PM"`.
 - **Text uppercased in code is uppercase on screen.** Match it in capitals.
+- **iOS's "Save Password?" sheet** appears after signing up or in. It belongs
+  to another process: Maestro can't see it, and can't see the app while it's
+  up. `subflows/dismiss-save-password.yaml` detects it by the expected screen
+  being hidden, and taps where "Not Now" sits.
+- **Each flow starts signed out.** The token survives in the Keychain between
+  runs; `subflows/start-signed-out.yaml` signs out through the UI if needed.
+- **Don't give `-e` variables a default in a flow's `env:` block.** The
+  flow's value wins over the command line. Default in the expression
+  instead, as `subflows/open-app.yaml` does.
 - **Unique data per run.** `runScript` can set `output.*` (see
   `scripts/new-account.js`), and flows use it as `${output.email}`.
