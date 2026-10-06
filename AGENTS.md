@@ -29,6 +29,14 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v56.0.0/ before 
 - Unhandled and fatal errors are already captured globally by `installErrorReporting()` in the root layout. Do not wrap code in try/catch just to report it.
 - Every report costs an admin's attention. A noisy log is a log nobody reads.
 
+### End-to-end tests (Maestro)
+
+- Flows live in `maestro/flows/`. Read `maestro/README.md` before writing one; it lists the traps.
+- Give every button and input a flow touches a `testID`, and select by `id:`.
+- Changing a screen a flow covers means updating the flow in the same change.
+- New user-facing features get a flow.
+
 ### Before finishing
 
 - Run `npx tsc --noEmit`. It must pass.
+- If you changed a screen, run `npm run e2e` (or the flows that touch it). Every flow must pass.

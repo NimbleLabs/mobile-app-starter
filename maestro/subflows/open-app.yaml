@@ -1,0 +1,15 @@
+# Opens the app in Expo Go, pointed at Metro, and waits for the first
+# screen. Projects that move to a development build (expo-dev-client, e.g.
+# for Sign in with Apple) swap this for a dev-build version — see
+# maestro/README.md.
+appId: host.exp.Exponent
+---
+- launchApp
+- openLink: ${METRO_URL}
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- waitForAnimationToEnd:
+    timeout: 20000

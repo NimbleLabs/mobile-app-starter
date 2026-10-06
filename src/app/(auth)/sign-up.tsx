@@ -62,6 +62,7 @@ export default function SignUpScreen() {
             value={name}
             onChangeText={setName}
             editable={!submitting}
+            testID="sign-up-name"
           />
           <TextField
             label="Email"
@@ -72,6 +73,7 @@ export default function SignUpScreen() {
             value={email}
             onChangeText={setEmail}
             editable={!submitting}
+            testID="sign-up-email"
           />
           <TextField
             label="Password"
@@ -82,13 +84,14 @@ export default function SignUpScreen() {
             onChangeText={setPassword}
             editable={!submitting}
             onSubmitEditing={handleSubmit}
+            testID="sign-up-password"
           />
 
-          <Button loading={submitting} onPress={handleSubmit} style={styles.button}>
+          <Button loading={submitting} onPress={handleSubmit} style={styles.button} testID="sign-up-submit">
             Create account
           </Button>
 
-          <Link href="/sign-in" style={styles.link}>
+          <Link href="/sign-in" style={styles.link} testID="sign-up-to-sign-in">
             <ThemedText type="small" themeColor="textSecondary">
               Already have an account?{' '}
             </ThemedText>

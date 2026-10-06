@@ -217,6 +217,13 @@ Mechanics worth knowing:
 - **Payload:** `{ log: { level, message, error_class, backtrace, source: 'mobile', context } }`, with `context` automatically including platform, OS version, and app version.
 - **Try it:** the Profile screen has a dev-only "Send test error" button (`__DEV__` only) that fires a `warn`-level report — a quick way to confirm the whole path works end to end.
 
+## End-to-end tests (Maestro)
+
+Maestro flows drive the app on the iOS simulator: `npm run e2e`. They cover
+the app starting and the full sign-up / sign-out / sign-in loop against the
+Rails API. Setup, moving to a development build, and the traps worth knowing
+are in [`maestro/README.md`](maestro/README.md).
+
 ## Running on a device
 
 Expo Go on a physical phone can't reach `localhost` on your Mac — that resolves to the phone itself. Set `EXPO_PUBLIC_API_URL` to your Mac's LAN IP (e.g. `http://192.168.1.42:3000`) and make sure your firewall allows inbound on that port.

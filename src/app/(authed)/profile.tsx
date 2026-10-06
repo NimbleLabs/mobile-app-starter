@@ -67,7 +67,7 @@ export default function ProfileScreen() {
       </Section>
 
       <View style={styles.actions}>
-        <Button variant="danger" loading={signingOut} onPress={handleSignOut}>
+        <Button variant="danger" loading={signingOut} onPress={handleSignOut} testID="profile-sign-out">
           Sign out
         </Button>
 

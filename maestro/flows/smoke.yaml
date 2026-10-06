@@ -1,0 +1,17 @@
+# The app starts, shows sign-in, and moves between sign-in and sign-up.
+# Needs only Metro — no API.
+appId: host.exp.Exponent
+env:
+  METRO_URL: exp://127.0.0.1:8081
+---
+- runFlow: ../subflows/open-app.yaml
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 30000
+- takeScreenshot: maestro/screens/smoke-01-sign-in
+- tapOn:
+    id: sign-in-to-sign-up
+- assertVisible: "Create account"
+- tapOn:
+    id: sign-up-to-sign-in
+- assertVisible: "Welcome back"

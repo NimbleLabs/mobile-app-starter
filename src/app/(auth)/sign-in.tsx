@@ -58,6 +58,7 @@ export default function SignInScreen() {
             value={email}
             onChangeText={setEmail}
             editable={!submitting}
+            testID="sign-in-email"
           />
           <TextField
             label="Password"
@@ -68,13 +69,14 @@ export default function SignInScreen() {
             onChangeText={setPassword}
             editable={!submitting}
             onSubmitEditing={handleSubmit}
+            testID="sign-in-password"
           />
 
-          <Button loading={submitting} onPress={handleSubmit} style={styles.button}>
+          <Button loading={submitting} onPress={handleSubmit} style={styles.button} testID="sign-in-submit">
             Sign in
           </Button>
 
-          <Link href="/sign-up" style={styles.link}>
+          <Link href="/sign-up" style={styles.link} testID="sign-in-to-sign-up">
             <ThemedText type="small" themeColor="textSecondary">
               Don&apos;t have an account?{' '}
             </ThemedText>
