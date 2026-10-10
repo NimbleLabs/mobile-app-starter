@@ -1,6 +1,6 @@
 import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
-import { Fonts, FontWeightFamily, ThemeColor } from '@/constants/theme';
+import { DisplayFontFamily, Fonts, FontWeightFamily, ThemeColor } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedTextProps = TextProps & {
@@ -30,9 +30,9 @@ export function ThemedText({ style, type = 'default', themeColor, ...rest }: The
   );
 }
 
-// React Native applies weight by font family (Outfit ships one file per
-// weight), so each text style names its own Outfit family rather than using
-// `fontWeight`.
+// React Native applies weight by font family (each weight is its own loaded
+// file), so each text style names its own family rather than using
+// `fontWeight`. Titles use the heading font.
 const styles = StyleSheet.create({
   small: {
     fontFamily: FontWeightFamily.medium,
@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   title: {
-    fontFamily: FontWeightFamily.bold,
+    fontFamily: DisplayFontFamily,
     fontSize: 44,
     lineHeight: 48,
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontFamily: FontWeightFamily.semibold,
+    fontFamily: DisplayFontFamily,
     fontSize: 30,
     lineHeight: 38,
     letterSpacing: -0.3,

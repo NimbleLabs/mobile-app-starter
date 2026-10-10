@@ -1,22 +1,17 @@
 /**
- * Root layout. Loads the Outfit brand font (holding the splash until it's
+ * Root layout. Loads the brand fonts (holding the splash until they're
  * ready), wraps the whole app in <AuthProvider>, maps our design tokens onto
  * React Navigation's theme, starts analytics + error reporting, and uses a
  * Stack so the (auth) and (authed) groups can mount as siblings. Redirect
  * logic lives in each group's own _layout.
  */
-import {
-  Outfit_400Regular,
-  Outfit_500Medium,
-  Outfit_600SemiBold,
-  Outfit_700Bold,
-  useFonts,
-} from '@expo-google-fonts/outfit';
+import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
+import { BrandFontFiles } from '@/constants/branding';
 import { Colors } from '@/constants/theme';
 import { AuthProvider } from '@/contexts/auth';
 import { APP_OPENED, startAnalytics, track } from '@/lib/analytics';
@@ -56,12 +51,7 @@ let appOpenedTracked = false;
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [fontsLoaded, fontError] = useFonts({
-    Outfit_400Regular,
-    Outfit_500Medium,
-    Outfit_600SemiBold,
-    Outfit_700Bold,
-  });
+  const [fontsLoaded, fontError] = useFonts(BrandFontFiles);
 
   useEffect(() => {
     installErrorReporting();

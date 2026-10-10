@@ -9,8 +9,10 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 - Use tokens. `useTheme()` for colors, `Spacing` / `Radii` / `Shadows` / `FontWeightFamily` from `@/constants/theme`.
 - Use `<ThemedText>` / `<ThemedView>` and the primitives in `@/components/ui` (`Button`, `Card`, `TextField`, `Screen`, `Section`, `Collapsible`) before writing a new component.
 - Never hard-code a hex value, an ad-hoc font size, or a magic padding number in a screen. Need a value that doesn't exist? Add a token to `src/constants/theme.ts` and use it.
-- Weights are families, not numbers: `fontFamily: FontWeightFamily.bold`, never `fontWeight: '700'`. React Native does not synthesize weights for Outfit.
+- Weights are families, not numbers: `fontFamily: FontWeightFamily.bold`, never `fontWeight: '700'`. React Native does not synthesize weights for custom fonts. Headings use `DisplayFontFamily`.
+- Buttons, cards and inputs take `Radii.control` / `Radii.card` / `Radii.field`, which follow the configured corner style.
 - Brand strings (`appName`, `markText`, `tagline`) come from `@/constants/branding` — never inline the app name.
+- `src/constants/branding.ts` is generated from the Rails app's `config/app.yml` (name, fonts, primary and secondary colors, corners) by `bin/sync-mobile-theme` in rails-ai-starter. Don't edit it by hand: change the theme on the Rails admin's Theme page or in that file, then rerun the script. It also installs the `@expo-google-fonts` packages the fonts need.
 
 ### Analytics
 

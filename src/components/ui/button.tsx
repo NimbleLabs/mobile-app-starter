@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   base: {
     paddingVertical: 16,
     paddingHorizontal: 20,
-    borderRadius: Radii.lg,
+    borderRadius: Radii.control,
     alignItems: 'center',
     justifyContent: 'center',
   },

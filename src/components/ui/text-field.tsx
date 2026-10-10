@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   label: { letterSpacing: 0.5 },
   input: {
     borderWidth: 1,
-    borderRadius: Radii.md,
+    borderRadius: Radii.field,
     paddingHorizontal: Spacing.three,
     paddingVertical: 14,
     fontSize: 16,
