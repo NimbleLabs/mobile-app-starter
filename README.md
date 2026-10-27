@@ -114,6 +114,10 @@ const theme = useTheme();
 
 `<ThemedText>` types: `default`, `title`, `subtitle`, `small`, `smallBold`, `link`, `linkPrimary`, `code`.
 
+**Dark mode**
+
+The app follows the iPhone's Light/Dark setting and switches live. Because every color is read through `useTheme()` at render time, a screen built from tokens gets dark mode for free; `useColorScheme()` (`src/hooks/use-color-scheme.ts`, `'light' | 'dark'`) is there for the rare case that needs the scheme itself. The status bar, keyboard, alerts and tab bar follow the system on their own. Launch stays in the scheme too: the native splash colors in `app.json` match `SplashColors` in `theme.ts`, so the fade into the app never flashes. The rules are in `AGENTS.md`.
+
 **Typography**
 
 Outfit is the brand typeface, loaded in `src/app/_layout.tsx` via `@expo-google-fonts/outfit` (`Outfit_400Regular`, `Outfit_500Medium`, `Outfit_600SemiBold`, `Outfit_700Bold`). The root layout holds the splash until the font is ready so there's no flash of the system font. React Native does not synthesize weights for custom fonts — each weight is a separate loaded family — which is exactly why `FontWeightFamily` exists: set `fontFamily: FontWeightFamily.semibold`, not `fontWeight: '600'`.
@@ -239,7 +243,7 @@ When you fork this as the basis for a real app, the following references will ne
 - `app.json` → `expo.name`, `expo.slug`, `expo.scheme`
 - This `README.md` title
 
-Re-branding the palette as well? Change `primary` / `primaryHover` in both schemes and the `Brand` ramp in `src/constants/theme.ts`, then the colors baked into `app.json` — `expo.plugins` → `expo-splash-screen` `backgroundColor` (and its `dark.backgroundColor`) and `expo.android.adaptiveIcon.backgroundColor`. Keep them in step with the Rails admin's palette.
+Re-branding the palette as well? Change `primary` / `primaryHover` in both schemes and the `Brand` ramp in `src/constants/theme.ts`, then the colors baked into `app.json` — `expo.plugins` → `expo-splash-screen` `backgroundColor` (and its `dark.backgroundColor`, which must stay equal to `SplashColors` in `theme.ts`) and `expo.android.adaptiveIcon.backgroundColor`. Keep them in step with the Rails admin's palette.
 
 ## Working with Claude Code
 

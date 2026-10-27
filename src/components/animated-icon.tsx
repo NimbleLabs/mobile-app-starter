@@ -4,13 +4,19 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import Animated, { Easing, Keyframe } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
-import { Brand } from '@/constants/theme';
+import { Brand, SplashColors } from '@/constants/theme';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 const INITIAL_SCALE_FACTOR = Dimensions.get('screen').height / 90;
 const DURATION = 600;
 
+/**
+ * Picks up where the native splash leaves off — same color, per scheme — and
+ * fades into the app, so launch has no hard cut and no flash of color.
+ */
 export function AnimatedSplashOverlay() {
   const [visible, setVisible] = useState(true);
+  const scheme = useColorScheme();
 
   if (!visible) return null;
 
@@ -41,7 +47,7 @@ export function AnimatedSplashOverlay() {
           scheduleOnRN(setVisible, false);
         }
       })}
-      style={styles.backgroundSolidColor}
+      style={[styles.backgroundSolidColor, { backgroundColor: SplashColors[scheme] }]}
     />
   );
 }
@@ -128,7 +134,6 @@ const styles = StyleSheet.create({
   },
   backgroundSolidColor: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: Brand[600],
     zIndex: 1000,
   },
 });

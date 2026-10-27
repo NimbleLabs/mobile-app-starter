@@ -26,6 +26,8 @@ export function TextField({ label, error, containerStyle, style, editable, ...re
       ) : null}
       <TextInput
         placeholderTextColor={theme.textSecondary}
+        // The caret and selection; iOS would otherwise use its system blue.
+        selectionColor={theme.primary}
         editable={editable}
         style={[
           styles.input,

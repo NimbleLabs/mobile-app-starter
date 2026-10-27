@@ -10,6 +10,10 @@
  * (bin/sync-mobile-theme), so web and mobile share one look. To re-brand,
  * change the theme there, not here. Splash / adaptive-icon colors live in
  * app.json.
+ *
+ * Every color has a light and a dark value, and the app follows the iPhone's
+ * appearance setting live. Read colors with `useTheme()` during render, never
+ * `Colors.light.*` in a StyleSheet, or the screen won't change with it.
  */
 
 import '@/global.css';
@@ -63,6 +67,17 @@ export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
  * semantic token. 500 is the primary.
  */
 export const Brand = BrandRamp;
+
+/**
+ * The launch screen's color in each scheme. These MUST equal expo-splash-screen's
+ * `backgroundColor` and `dark.backgroundColor` in app.json: the root layout's
+ * overlay starts in this color and fades into the app, so a mismatch shows as
+ * a flash on every launch. In dark mode the launch stays dark end to end.
+ */
+export const SplashColors = {
+  light: Brand[500],
+  dark: Colors.dark.background,
+} as const;
 
 /**
  * The body font, one family per weight: React Native does not synthesize

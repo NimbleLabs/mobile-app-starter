@@ -14,6 +14,19 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 - Brand strings (`appName`, `markText`, `tagline`) come from `@/constants/branding` — never inline the app name.
 - `src/constants/branding.ts` is generated from the Rails app's `config/app.yml` (name, fonts, primary and secondary colors, corners) by `bin/sync-mobile-theme` in rails-ai-starter. Don't edit it by hand: change the theme on the Rails admin's Theme page or in that file, then rerun the script. It also installs the `@expo-google-fonts` packages the fonts need.
 
+### Dark mode
+
+- The app follows the iPhone's Light/Dark setting and switches live, with no relaunch (`userInterfaceStyle: "automatic"` in app.json). Every screen ships working in both.
+- There's no in-app appearance switch, on purpose: Apple's HIG says to respect the system-wide setting, not offer an app-specific one. Don't add one unless asked.
+- Colors come from `useTheme()` during render. Never put `Colors.light.*` / `Colors.dark.*` in a `StyleSheet.create` — it won't change with the scheme. Stylesheets hold layout; colors go inline: `style={[styles.row, { borderColor: theme.border }]}`.
+- A new color token gets a light and a dark value in `Colors` (`src/constants/theme.ts`). Dark isn't an inversion: surfaces get lighter as they rise (`background` → `surface` → `backgroundElement`), and accents sit a step brighter for contrast.
+- Need the scheme itself, say to pick an image? `useColorScheme()` from `@/hooks/use-color-scheme`, which returns `'light' | 'dark'`. Not react-native's: it can also return `'unspecified'` or null.
+- Shadows barely show on dark backgrounds. Separate surfaces with `surface` and a `border`, as `Card` does, not with a shadow alone.
+- Icons: SF Symbols (`expo-symbols`) or template images, tinted with a theme color, so they flip. Full-color art that only works on one background: choose it per scheme.
+- iOS handles the rest: the status bar, the keyboard, `Alert`s and the tab bar's glass all follow the system. Don't set `keyboardAppearance` or an app-wide `<StatusBar style>`.
+- Launch: expo-splash-screen's `backgroundColor` and `dark.backgroundColor` in app.json must equal `SplashColors` in `theme.ts`. The root layout's overlay starts in that color and fades into the app, so a mismatch is a flash on every launch. `bin/sync-mobile-theme` doesn't touch app.json; after a rebrand, update the light splash color by hand.
+- The iOS icon (`assets/expo.icon`) is an Icon Composer file; iOS draws its dark and tinted versions from it. Replace it with another `.icon`, not a flat PNG, or the home screen loses them.
+
 ### Analytics
 
 - Ahoy, via `src/lib/analytics.ts` → `POST /api/v1/events`. Events are rows in the project's Postgres; no third-party SDK.
@@ -42,3 +55,4 @@ Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before 
 
 - Run `npx tsc --noEmit`. It must pass.
 - If you changed a screen, run `npm run e2e` (or the flows that touch it). Every flow must pass.
+- If you changed a screen, look at it in dark mode as well as light: with the app open in the simulator, Cmd-Shift-A toggles the appearance (or `xcrun simctl ui <udid> appearance dark`). It must switch without a reload.

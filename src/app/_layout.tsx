@@ -8,12 +8,12 @@
 import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import { BrandFontFiles } from '@/constants/branding';
 import { Colors } from '@/constants/theme';
 import { AuthProvider } from '@/contexts/auth';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { APP_OPENED, startAnalytics, track } from '@/lib/analytics';
 import { installErrorReporting } from '@/lib/logger';
 
@@ -69,7 +69,7 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? NavigationThemes.dark : NavigationThemes.light}>
+    <ThemeProvider value={NavigationThemes[colorScheme]}>
       <AuthProvider>
         <AnimatedSplashOverlay />
         <Stack screenOptions={{ headerShown: false }}>
