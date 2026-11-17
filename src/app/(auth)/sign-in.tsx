@@ -1,6 +1,7 @@
 import { Link, useRouter } from 'expo-router';
+import { openBrowserAsync, WebBrowserPresentationStyle } from 'expo-web-browser';
 import { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, StyleSheet } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BrandMark } from '@/components/brand-mark';
@@ -10,6 +11,17 @@ import { Button, TextField } from '@/components/ui';
 import { Branding } from '@/constants/branding';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/contexts/auth';
+import { BASE_URL } from '@/lib/api';
+
+// Resetting a password happens on the Rails app's own page (Devise's), which
+// emails a link to set a new one. The person then comes back here to sign in.
+const FORGOT_PASSWORD_URL = `${BASE_URL}/users/password/new`;
+
+function openForgotPassword() {
+  void openBrowserAsync(FORGOT_PASSWORD_URL, {
+    presentationStyle: WebBrowserPresentationStyle.AUTOMATIC,
+  });
+}
 
 export default function SignInScreen() {
   const router = useRouter();
@@ -71,6 +83,14 @@ export default function SignInScreen() {
             onSubmitEditing={handleSubmit}
             testID="sign-in-password"
           />
+          <Pressable
+            accessibilityRole="link"
+            hitSlop={Spacing.two}
+            onPress={openForgotPassword}
+            style={styles.forgot}
+            testID="sign-in-forgot-password">
+            <ThemedText type="linkPrimary">Forgot password?</ThemedText>
+          </Pressable>
 
           <Button loading={submitting} onPress={handleSubmit} style={styles.button} testID="sign-in-submit">
             Sign in
@@ -107,6 +127,7 @@ const styles = StyleSheet.create({
   },
   title: { textAlign: 'center', fontSize: 34, lineHeight: 40, marginTop: Spacing.two },
   subtitle: { textAlign: 'center' },
-  button: { marginTop: Spacing.two },
+  forgot: { alignSelf: 'flex-end', marginTop: -Spacing.two },
+  button: { marginTop: Spacing.one },
   link: { textAlign: 'center', marginTop: Spacing.two },
 });

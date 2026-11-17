@@ -6,7 +6,7 @@ real taps, end to end against the real API.
 | Flow | Covers | Needs |
 |---|---|---|
 | `flows/smoke.yaml` | The app starts; sign-in and sign-up screens | Metro |
-| `flows/auth.yaml` | Sign up, sign out, sign back in | Metro + the Rails API |
+| `flows/auth.yaml` | Forgot password, sign up, sign out, sign back in | Metro + the Rails API |
 
 ## Running
 

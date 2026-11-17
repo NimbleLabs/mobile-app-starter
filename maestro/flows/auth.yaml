@@ -1,11 +1,23 @@
-# Sign up, sign out, sign back in — against the real Rails API
-# (EXPO_PUBLIC_API_URL). Makes a new account every run.
+# Forgot password, then sign up, sign out, sign back in — against the real
+# Rails API (EXPO_PUBLIC_API_URL). Makes a new account every run.
 appId: host.exp.Exponent
 ---
 - runScript:
     file: ../scripts/new-account.js
 - runFlow: ../subflows/open-app.yaml
 - runFlow: ../subflows/start-signed-out.yaml
+# "Forgot password?" opens the Rails app's reset page in an in-app browser.
+- waitForAnimationToEnd
+- tapOn:
+    id: sign-in-forgot-password
+- extendedWaitUntil:
+    visible: "Forgot your password?"
+    timeout: 15000
+- takeScreenshot: maestro/screens/auth-00-forgot-password
+- tapOn: "Done"
+- extendedWaitUntil:
+    visible: "Welcome back"
+    timeout: 10000
 - tapOn:
     id: sign-in-to-sign-up
 - tapOn:
